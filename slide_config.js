@@ -1,8 +1,8 @@
 var SLIDE_CONFIG = {
   // Slide settings
   settings: {
-    title: 'Gradle',
-    subtitle: 'New Android build system',
+    title: 'Doing Better On Android Hackathon',
+    subtitle: 'Tips & Tricks',
 //    eventInfo: {
 //      title: 'MDday Lviv',
 //      date: '21/09/2013'
