@@ -1,7 +1,7 @@
 var SLIDE_CONFIG = {
   // Slide settings
   settings: {
-    title: 'Doing Better On Android Hackathon',
+    title: 'Being Productive Android Dev',
     subtitle: 'Tips & Tricks',
 //    eventInfo: {
 //      title: 'MDday Lviv',
