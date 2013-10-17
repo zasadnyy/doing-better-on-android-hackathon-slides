@@ -1,1473 +1,488 @@
-<!--
-
-GDG[x] Glider based on
-Google IO 2012/2013 HTML5 Slide Template
-
-Authors: Eric Bidelman <ebidel@gmail.com>
+<!-- GDG[x] Glider based on Google IO 2012/2013 HTML5 Slide Template Authors: Eric Bidelman <ebidel@gmail.com>
          Luke Mahé <lukem@google.com>
 
 URL: https://code.google.com/p/io-2012-slides
 -->
 <!DOCTYPE html>
 <html>
-<head>
-  <title></title>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="chrome=1">
-  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">-->
-  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-  <!--This one seems to work all the time, but really small on ipad-->
-  <!--<meta name="viewport" content="initial-scale=0.4">-->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="stylesheet" media="all" href="theme/css/default.css">
-  <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="theme/css/phone.css">
-  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
-  <script data-main="js/slides" src="js/require-1.0.8.min.js"></script>
-</head>
-<body style="opacity: 0">
-
-<slides class="layout-widescreen">
-
-  <slide class="logoslide nobackground">
-    <article class="flexbox vcenter">
-      <span><img src="images/gdg_logo.png"></span>
-    </article>
-  </slide>
-
-  <slide class="title-slide segue nobackground">
-    <aside class="gdbar"><img src="images/gdg_icon_128.png"></aside>
-    <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
-    <hgroup class="auto-fadein">
-      <h1 data-config-title><!-- populated from slide_config.json --></h1>
-      <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
-      <p data-config-presenter><!-- populated from slide_config.json --></p>
-    </hgroup>
-  </slide>
-
-    <slide>
-        <aside class="note">
-            <section>
-                <ul>
-                    <li>customizable Ant scripts</li>
-                    <li>IDEs has their own builders, IDEA has good one, but it doen't support Manifest merging, mvn is also very flexible, good for CI, but IDE integrations is pain - and it breaks your workflow</li>
-                    <li>besides basic features, like dependency management, running test, etc it woould be cool if new build system has support for android specific features</li>
-                </ul>
-            </section>
-        </aside>
-    <hgroup>
-      <h2>Why A New Build System?</h2>
-    </hgroup>
-    <article>
-      <ul>
-        <li>Extensibility / Customization / Stable APIs</li>
-        <li>Unified across CI Servers and IDEs</li>
-        <li>Standart and advanced features</li>
-      </ul>
-      <ul class="build">
-          <li>Current solutions (aka Ant, Maven) are not ideal</li>
-      </ul>
-    </article>
-  </slide>  
     
-  <slide>
-      <aside class="note">
-          <section>
-              <ul>
-                  <li><b>Declarative</b> - it much easier to read gradle files than mvn or ant xml's</li>
-                  <li><b>Flexible</b> - allows a lot of customization of build process</li>
-                  <li><b>Tooling API</b> - allows to povide great IDE integration</li>
-                  <li><b>Build System Toolkit</b> - we created custom DSL for android plugint to satisfy all needs and provide simple API for 3rd party developers</li>
-                  <li><b>Open source</b> - licence: Apache </li>
-              </ul>
-          </section>
-      </aside>
-    <hgroup>
-      <h2>Why Gradle?</h2>
-    </hgroup>
-    <article>
-      <ul>
-        <li>Powerful Build System
-            <ul>
-                <li>Declarative, Flexible</li>
-                <li>Imperative customization</li>
-                <li>Tooling API</li>
-            </ul>
-        </li>
-      </ul>
-      <ul class="build">
-        <li>Build System Toolkit
-            <ul>
-                <li>Plugins create own DSL, APIs, IDE integration</li>
-            </ul>
-        </li>
-      </ul>
-      <ul class="build">
-          <li>Free / Open Source</li>
-      </ul>
-    </article>
-  </slide>  
-    
-    
-  <slide class="segue dark nobackground">
-      <aside class="note">
-          <section>
-              <b>Ask:</b> how many of you ever tried Gradle? What about Android plugin?
-          </section>
-      </aside>
-    <aside class="gdbar"><img src="images/gdg_icon_128.png"></aside>
-    <hgroup class="auto-fadein">
-      <h2>Gradle Basics</h2>
-    </hgroup>
-  </slide>
-
-  <slide>
-      <aside class="note">
-          <section>
-              <ul>
-                  Simple java project
-                  <li><b>build.gradle</b> - all configuration goes here, located in root of your project</li>
-                  <li><b>one line == </b> - build main code + generate jar + build tests + run tests + write output to xml</li>
-              </ul>
-          </section>
-      </aside>
-    <hgroup>
-      <h2>Simple Java Project</h2>
-    </hgroup>
-    <article>
-        <pre class="prettyprint" data-lang="build.gradle">
-           
-apply plugin: 'java'
-
-
-
-
-
-
-        </pre>
-    </article>
-  </slide>
-    
-  <slide>
-      <aside class="note">
-          <section>
-              <ul>
-                  <li>First lines defines where our plugin sould be downloaded, this declaration will be improoved in the future to be less verbose</li>
-                  <li>compileSdkVersion - is sth previously called targetSdk in project.properties</li>
-                  <li><b>What this will do?</b> Build apk, buid test apk (btw tests are again in main project, coz it was hard to find relation between projects), run test on all connected devices in parallel and generate report</li>
-                  
-              </ul>
-          </section>
-      </aside>
-    <hgroup>
-      <h2>Simple Android Project</h2>
-    </hgroup>
-    <article>
-        <pre class="prettyprint" data-lang="build.gradle">
-           
-buildscript {
-    repositories { mavenCentral() }
-    dependencies { classpath 'com.android.tools.build:gradle:0.5.+' }
-}
-
-apply plugin: 'android'
-
-<b>
-android {
-    compileSdkVersion 17
-    buildToolsVersion: '17.0.0'
-}
-            </b>
-        </pre>
-    </article>
-  </slide>
-    
-  <slide>
-      <aside class="note">
-          <section>
-              Note: we didn't configure anything, it's convetion over configuration
-          </section>
-      </aside>
-    <hgroup>
-      <h2>Conventions: Source Folders</h2>
-    </hgroup>
-    <article>
-      <div class="columns-2">
-          <p>
-              <code>src/main/java</code><br/>
-              <code>src/main/resources</code>
-          </p>
-          <p>
-              <code>src/test/java</code><br/>
-              <code>src/test/resources</code>
-          </p>
-      </div>
-    </article>
-  </slide>
-    
-  <slide>
-    <aside class="note">
-      <section>
-          <ul>
-              <li>We have...</li>
-              <li>Test are moved to "instrumentTests" folder, regural "test" folder left for JUnit tests</li>
-          </ul>
-        <p><b>Note:</b> AndroidManifest.xml for instrumentTest is generated automatically, I'll talk about it in detail a bit later</p>
-      </section>
-    </aside>
-    <hgroup>
-      <h2>Conventions: Source Folders Android</h2>
-    </hgroup>
-    <article>
-      <div class="columns-2">
-          <p>
-              <code>src/main/AndroidManifest.xml</code><br/>
-              <code>src/main/java</code><br/>
-              <code>src/main/resources</code><br/>
-              <code>src/main/res</code><br/>
-              <code>src/main/assets</code><br/>
-              <code>src/main/aidl</code><br/>
-              <code>src/main/rs</code><br/>
-              <code>src/main/jni</code><br/>
-          </p>
-          <p>
-              <br/>
-              <code>src/instrumentTest/java</code><br/>
-              <code>src/instrumentTest/resources</code><br/>
-              <code>src/instrumentTest/res</code><br/>
-              <code>src/instrumentTest/assets</code><br/>
-              <code>src/instrumentTest/aidl</code><br/>
-              <code>src/instrumentTest/rs</code><br/>
-              <code>src/instrumentTest/jni</code><br/>
-          </p>
-      </div>
-    </article>
-  </slide>
-    
-    
-  <slide>
-      <aside class="note">
-          <section>
-              <p>And now I'll show you first feature you'll definitelly like</p>
-          </section>
-      </aside>
-      <hgroup>
-          <h2>Configuration for old projects</h2>
-      </hgroup>
-      <article>
-          <pre class="prettyprint" data-lang="build.gradle">
-           
-android {
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs ['src']
-            res.srcDirs ['res']
-        }
-        
-        instrumentTest.setRoot('tests')
-    }
-}
-        </pre>
-      </article>
-  </slide>    
-    
-    
-    <slide hidden>
-        <hgroup>
-            <h2>Continuous drawable folders</h2>
-        </hgroup>
-        <article class="flexbox vcenter">
-            <img src="images/content/continuous_drawable_folder.png" alt="Continuous drawables folders" title="Continuous drawables folders">
-            <footer class="source">source: real life</footer>
-        </article>
-    </slide>
-    
-    
-    <slide>
-      <aside class="note">
-          <section>
-            <p>Several src and res folders</p>
-          </section>
-      </aside>
-      <hgroup>
-          <h2>Configuration for old projects</h2>
-      </hgroup>
-      <article>
-          <pre class="prettyprint" data-lang="build.gradle">
-           
-android {
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs ['src']
-            <b>res.srcDirs ['res', 'res2']</b>
-        }
-        
-        instrumentTest.setRoot('tests')
-    }
-}
-        </pre>
-      </article>
-    </slide>    
-    
-    
-    <slide>
-        <aside class="note">
-            <section>
-                In complex projects gradle tasks will print around 50 commands, but actually we don't care about all of them
-            </section>
-        </aside>
-        <hgroup>
-            <h2>Gradle Tasks</h2>
-        </hgroup>
-        <article>
-            <code>$ cd myproject/</code><br/>
-            <code>$ cd gradle &lt;taskName1&gt; [taskName2]</code><br/>
-            <br/><br/>
-            <code>$ cd gradle tasks [--all]</code>
-        </article>
-    </slide>
-    
- 
-    <slide>
-        <hgroup>
-            <h2>Gradle Tasks</h2>
-        </hgroup>
-        <article>
-            <p>
-                <code>assemble</code><br/>
-                <br/>
-                <br/>
-                <code>check</code><br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <code>build</code><br/>
-                <code>&nbsp;&nbsp;-> assemble + check</code><br/>
-                <br/>
-                <code>clean</code><br/>
-                <br/>
-            </p>
-            <div class="build">
-                <p>
-                    <code style="position: absolute; top: 159px; left: 60px;" class="red">&nbsp;&nbsp;jar</code>
-                    <code style="position: absolute; top: 239px; left: 60px;" class="red">&nbsp;&nbsp;test</code><br/>
-                </p>
-                <p style="position: absolute; top: 264px; left: 60px;">
-                    <code class="red">&nbsp;&nbsp;findBugsMain</code><br/>
-                    <code class="red">&nbsp;&nbsp;findBugsTests</code><br/>
-                </p>
-            </div>
-        </article>
-    </slide>
-    
-    
-    <slide>
-        <hgroup>
-            <h2>Gradle Tasks</h2>
-        </hgroup>
-        <article>
-            <div class="columns-2">
-                <p>
-                    <code>assemble</code><br/>
-                    <code>&nbsp;&nbsp;jar</code><br/>
-                    <br/>
-                    <code>check</code><br/>
-                    <code>&nbsp;&nbsp;test</code><br/>
-                    <code>&nbsp;&nbsp;findBugsMain</code><br/>
-                    <code>&nbsp;&nbsp;findBugsTests</code><br/>
-                    <br/>
-                    <code>build</code><br/>
-                    <code>&nbsp;&nbsp;-> assemble + check</code><br/>
-                    <br/>
-                    <code>clean</code><br/>
-                    <br/>
-                </p>
-                <p>
-                    <code>assemble</code><br/>
-                    <br/>
-                    <br/>
-                    <code>check</code><br/>
-                    <code>connectedCheck</code><br/>
-                    <code>deviceCheck</code><br/>
-                    <br/>
-                    <br/>
-                    <code>build</code><br/>
-                    <code>&nbsp;&nbsp;-> assemble + check</code><br/>
-                    <br/>
-                    <code>clean</code><br/>
-                    <br/>
-                </p>
-            </div>
-            <div class="build">
-                <p>
-                    <nobr>
-                        <code style="position: absolute; top: 163px; left: 562px;" class="red">&nbsp;&nbsp;assembleDebug + assembleRelease</code>
-                    </nobr>
-                </p>
-            </div>
-        </article>
-    </slide>
-    
-    
-    <slide class="segue dark nobackground">
-        <aside class="gdbar"><img src="images/gdg_icon_128.png"></aside>
-        <hgroup class="auto-fadein">
-            <h2>Customization</h2>
-        </hgroup>
-    </slide>
-    
-    
-    <slide>
-        <aside class="note">
-             <section>
-                 <ul>
-                     <li>Values from configuration will be injected directly to AndroidMAnifest</li>
-                     <li><b>Why should I do that?</b>  imagine you have nightly builds...</li>
-                 </ul>
-             </section>
-         </aside>
-        <hgroup>
-            <h2>Basic Customization</h2>
-        </hgroup>
-        <article>
-            <pre class="prettyprint" data-lang="build.gradle">
-
-android {
-    defaultConfig {
-        versionCode 12
-        versionName '2.0'
-        
-        minSdkVersion 14
-        targetSdkVersion 17
-    }
-}
-            </pre>     
-        </article>
-    </slide>
-    
-    
-      <slide>
-         <aside class="note">
-             <section>
-                 e.g. on CI server it could get code from some property and on desktop return default value -1, so version code won't be incremented
-                 <b>So you can do some custom logic, but it is still very declarative </b>
-             </section>
-         </aside> 
-        <hgroup>
-            <h2>Basic Customization</h2>
-        </hgroup>
-        <article>
-            <pre class="prettyprint" data-lang="build.gradle">
-
-def <b>getVersionCode()</b> {
-    def code = ...
-    return code
-}
-
-android {
-    defaultConfig {
-        versionCode <b>getVersionCode()</b>
-        ...
-    }
-}
-            </pre>     
-        </article>
-    </slide>
-    
-     <slide>
-         <aside class="note">
-             <section>
-                 Many of Android developers asked to make sth that will allow easily what to include in build and actually waht to build. And with gradle we have this in build type concept.
-                 <b>By default there is debug and release build types, but you can easily create new ones</b>
-             </section>
-         </aside>
-        <hgroup>
-            <h2>Build Types</h2>
-        </hgroup>
-        <article>
-            <ul>
-                <li>Build/Packaging customization
-                    <ul>
-                        <li>debuggable flag</li>
-                        <li>ProGuard</li>
-                        <li>signing configuration</li>
-                        <li>src/res overlays</li>
-                    </ul>
-                </li>
-            </ul>
-            <ul>
-                <li>Debug and release prebuild</li>
-            </ul>
-        </article>
-    </slide>
-    
-    
-    <slide>
-        <aside class="note">
-            <section>
-                Here we set custom properties but it's not enought
-            </section>         
-        </aside>       
-        <hgroup>
-            <h2>Build Types: DSL</h2>
-        </hgroup>
-        <article>
-            <pre class="prettyprint" data-lang="build.gradle">
-
-android {
-    buildTypes {
-        debug {
-            packageNameSuffix '.debug'
-            versionNameSuffix '-DEBUG'
-        }
-        beta {
-            ...
-        }   
-    }
-}
-            </pre>  
-        </article>
-    </slide>
-    
-  <slide>
-    <hgroup>
-      <h2>Build Types: Source Folders</h2>
-    </hgroup>
-    <article>
-      <div class="columns-2">
-          <p>
-              <code>src/main/AndroidManifest.xml</code><br/>
-              <code>src/main/java</code><br/>
-              <code>src/main/resources</code><br/>
-              <code>src/main/res</code><br/>
-              <code>src/main/assets</code><br/>
-              <code>src/main/aidl</code><br/>
-              <code>src/main/rs</code><br/>
-              <code>src/main/jni</code><br/>
-              <br/>
-              <br/>
-              <code class="red">src/debug/...</code><br/>
-              <code class="red">src/beta/...</code><br/>
-              <code class="red">src/release/...</code>
-          </p>
-          <p>
-              <br/>
-              <code>src/instrumentTest/java</code><br/>
-              <code>src/instrumentTest/resources</code><br/>
-              <code>src/instrumentTest/res</code><br/>
-              <code>src/instrumentTest/assets</code><br/>
-              <code>src/instrumentTest/aidl</code><br/>
-              <code>src/instrumentTest/rs</code><br/>
-              <code>src/instrumentTest/jni</code><br/>
-              <br/>
-              <br/>
-              <br/>
-              <br/>
-          </p>
-      </div>
-    </article>
-  </slide>
-    
-    
-    <slide>
-        <hgroup>
-            <h2>Build Types: Tasks</h2>
-        </hgroup>
-        <article>
-            <div class="columns-2">
-                <p>
-                    <code>assemble</code><br/>
-                    <code>&nbsp;&nbsp;jar</code><br/>
-                    <br/>
-                    <br/>
-                    <code>check</code><br/>
-                    <code>&nbsp;&nbsp;test</code><br/>
-                    <code>&nbsp;&nbsp;findBugsMain</code><br/>
-                    <code>&nbsp;&nbsp;findBugsTests</code><br/>
-                    <br/>
-                    <code>build</code><br/>
-                    <code>&nbsp;&nbsp;-> assemble + check</code><br/>
-                    <br/>
-                    <code>clean</code><br/>
-                    <br/>
-                </p>
-                <p>
-                    <code>assemble</code><br/>
-                    <nobr><code class="red">&nbsp;&nbsp;assembleDebug + assembleBeta +</code></nobr>
-                    <code class="red">&nbsp;&nbsp;assembleRelease</code><br/>
-                    <br/>
-                    <code>check</code><br/>
-                    <code>connectedCheck</code><br/>
-                    <code>deviceCheck</code><br/>
-                    <br/>
-                    <br/>
-                    <code>build</code><br/>
-                    <code>&nbsp;&nbsp;-> assemble + check</code><br/>
-                    <br/>
-                    <code>clean</code><br/>
-                    <br/>
-                </p>
-            </div>
-            <div class="build">
-                <p>
-                    <nobr>
-                        <code style="position: absolute; top: 163px; left: 562px;" class="red">&nbsp;&nbsp;assembleDebug + assembleRelease</code>
-                    </nobr>
-                </p>
-            </div>
-        </article>
-    </slide>
-    
-    
-    <slide>    
-        <hgroup>
-            <h2>Signing Configuration</h2>
-        </hgroup>
-        <article>
-            <pre class="prettyprint" data-lang="build.gradle">
-
-android {
-    signingConfigs {
-        debug {
-            storeFile file('debug.keystore')
-        }
-        
-        // buildTypes.debug already configured
-        // to use signingConfigs.debug
-    }
-}
-            </pre> 
-        </article>
-    </slide>
-
-
-    <slide>    
-        <aside class="note">
-            <section>
-                This example shows that 'constructor' of debugRelease build type receives not primitive but object of type buildType.
-                <b>This means that this is not just set of properties, but live object model </b>
-            </section>
-        </aside>
-        <hgroup>
-            <h2>Debuggable Release Builds</h2>
-        </hgroup>
-        <article>
-            <pre class="prettyprint" data-lang="build.gradle">
-
-android {
-    buildTypes {
-        <b>debugRelease.initWith(buildTypes.release)</b>
-        debugRelease {
-            debuggable true
-            packageNameSuffix '.debugrelease'
-            signingConfig signingConfig.debug
-        }
-        sourceSets.debugRelease.setRoot('src/release')
-    }
-}
-            </pre> 
-        </article>
-    </slide>
-    
-    <slide>    
-        <aside class="note">
-            <section>
-                <p>This allows you to do sth like this after you configure your build model.</p>
-                <p><b>Note</b> that build model is configured before it's send to IDE, so IDE is always aware of what is going on</p>
-            </section>
-        </aside>
-        <hgroup>
-            <h2>Manipulating the Model</h2>
-        </hgroup>
-        <article>
-            <pre class="prettyprint" data-lang="build.gradle">
-
-android {
-    ...
-}
-<b>
-android.buildTypes.each { 
-    type -> type.packageNameSuffix = ".$type.name"
-}
-</b>
-            </pre> 
-        </article>
-    </slide>
-    
-     <slide class="segue dark nobackground">
-        <aside class="gdbar"><img src="images/gdg_icon_128.png"></aside>
-        <hgroup class="auto-fadein">
-            <h2>Dependencies</h2>
-        </hgroup>
-    </slide>
-    
-    <slide>
-        <hgroup>
-            <h2>Dependencies: Scopes</h2>
-        </hgroup>
-        <article>
-            <div class="columns-2">
-                <p>
-                    <code>compile</code><br/>
-                    <code>runtime</code><br/>
-                    <br/>
-                    <br/>
-                    <code>testCompile</code><br/>
-                    <code>testRuntime</code><br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                </p>
-                <p class="build">
-                    <span>
-                        <code>compile</code><br/>
-                        <code>apk</code><br/>
-                        <br/>
-                        <br/>
-                        <code>instrumentTestCompile</code><br/>
-                        <code>instrumentTestRuntime</code><br/>
-                    </span>
-                    <span>
-                        <br/>
-                        <br/>
-                        <code class="red">debugCompile/Package</code><br/>
-                        <code class="red">releaseCompile/Package</code><br/>
-                        <code class="red">betaCompile/Package</code><br/>
-                    </span>
-                </p>
-            </div>
-        </article>
-    </slide>
-    
-    
-    <slide>    
-        <hgroup>
-            <h2>Local Dependencies</h2>
-        </hgroup>
-        <article>
-            <pre class="prettyprint" data-lang="build.gradle">
-
-dependencies {
-    compile fileTree(dir: 'libs', include '*.jar')
-}
-
-android {
-    ...
-}
-            </pre> 
-        </article>
-    </slide>
-
-    
-    <slide>    
-        <hgroup>
-            <h2>Remote Dependencies</h2>
-        </hgroup>
-        <article>
-            <pre class="prettyprint" data-lang="build.gradle">
-
-repositories { mavenCentral() }
-
-dependencies {
-    compile 'com.actionbarsherlock:actionbarsherlock:4.3.1'
-    betaCompile file('libs/protobuf.jar')
-}
-
-android {
-    ...
-}
-            </pre> 
-        </article>
-    </slide>
-    
-    <slide>    
-        <hgroup>
-            <h2>Multi-Project Setup</h2>
-        </hgroup>
-        <article>
-            <div class="columns-2">
-                <div>
-                    <pre style="background-color:white">
-
-MyProject/
- | <span class="blue2">settings.gradle</span>
- + app/
-    | <span class="blue2">build.gradle</span>
- + libs/
-    + lib1/
-       | <span class="blue2">build.gradle</span>
-    + lib2/
-       | <span class="blue2">build.gradle</span>
-                    </pre> 
-                </div>
-                <div>
-                    <pre class="prettyprint" data-lang="settings.gradle">
-
-    include ':app'
-    include ':libs:lib1'
-    include ':libs:lib2'  
-
-
-
-
- 
-
-                    </pre>
-                </div>
-            </div>
-        </article>
-    </slide>
-
-    
-     <slide>    
-        <hgroup>
-            <h2>Project Dependencies</h2>
-        </hgroup>
-        <article>
-            <pre class="prettyprint" data-lang="build.gradle">
-
-dependencies {
-    compile project(':libs:lib1')
-}
-
-android {
-    ...
-}
-            </pre> 
-        </article>
-    </slide>
-    
-    
-    <slide>    
-        <hgroup>
-            <h2>Android Library Project</h2>
-        </hgroup>
-        <article>
-            <pre class="prettyprint" data-lang="build.gradle">
-
-
-buildscript {
-    repositories { mavenCentral() }
-    dependencies { classpath 'com.android.tools.build:gradle:0.4' }
-}
-<b>
-apply plugin: 'android-library'
-</b>
-android {
-    compileSdkVersion 17
-    buildToolsVersion: '17.0.0'
-}
-            </pre> 
-        </article>
-    </slide>
-    
-    
-     <slide>
-         <aside class="note">
-             <section>
-                 Support for LINT rules is not implemented yet
-             </section>
-         </aside>
-        <hgroup>
-            <h2>Android Library</h2>
-        </hgroup>
-        <article>
-            <ul>
-                <li>Binary Bundle (.aar)
-                    <ul>
-                        <li>Uploadable to repositories</li>
-                    </ul>
-                </li>
-            </ul>
-            <ul>
-                <li>Support for
-                    <ul>
-                        <li>assets</li>
-                        <li>ProGuard rules</li>
-                        <li>Common Lint rules</li>
-                        <li>...</li>
-                    </ul>
-                </li>
-            </ul>
-        </article>
-    </slide>
-    
-    
-    <slide class="segue dark nobackground">
-        <aside class="gdbar"><img src="images/gdg_icon_128.png"></aside>
-        <hgroup class="auto-fadein">
-            <h2>Build Variants</h2>
-        </hgroup>
-    </slide>
-    
-    
-    <slide>
-         <aside class="note">
-             <section>
-                 
-             </section>
-         </aside>
-        <hgroup>
-            <h2>Build Flavors</h2>
-        </hgroup>
-        <article>
-            <ul>
-                <li>Different versions of the same application
-                    <ul>
-                        <li>Paid vs Free</li>
-                        <li>Multi .apk support in Google Play</li>
-                    </ul>
-                </li>
-            </ul>
-            <ul>
-                <li>Different Dimension(s) than Build Types</li>
-            </ul>
-        </article>
-    </slide>
-  
-    
-    <slide>    
-        <hgroup>
-            <h2>Product Flavors DSL</h2>
-        </hgroup>
-        <article>
-            <pre class="prettyprint" data-lang="build.gradle">
-
-android {
-    productFlavors {
-        flavor1 {
-            packageName 'com.example.flavor1'
-            minSdkVersion 14
-        }
-        flavor2 {
-            packageName 'com.example.flavor2'
-        }
-    }
-}
-            </pre> 
-        </article>
-  </slide>
-    
-    
-  <slide>
-    <hgroup>
-      <h2>Product Flavors: Source Folders</h2>
-    </hgroup>
-    <article>
-      <div class="columns-2">
-          <p>
-              <code>src/main/AndroidManifest.xml</code><br/>
-              <code>src/main/java</code><br/>
-              <code>src/main/resources</code><br/>
-              <code>src/main/res</code><br/>
-              <code>src/main/assets</code><br/>
-              <code>src/main/aidl</code><br/>
-              <code>src/main/rs</code><br/>
-              <code>src/main/jni</code><br/>
-              <br/>
-              <br/>
-              <code>src/debug/...</code><br/>
-              <code>src/beta/...</code><br/>
-              <code>src/release/...</code><br/>
-              <code class="red">src/flavor1/...</code><br/>
-          </p>
-          <p>
-              <br/>
-              <code>src/instrumentTest/java</code><br/>
-              <code>src/instrumentTest/resources</code><br/>
-              <code>src/instrumentTest/res</code><br/>
-              <code>src/instrumentTest/assets</code><br/>
-              <code>src/instrumentTest/aidl</code><br/>
-              <code>src/instrumentTest/rs</code><br/>
-              <code>src/instrumentTest/jni</code><br/>
-              <br/>
-              <br/>
-              <br/>
-              <br/>
-              <br/>
-              <code class="red">src/instrumentTestFlavor1/...</code><br/>
-          </p>
-      </div>
-    </article>
-  </slide>
-    
-   
-   <slide>
-        <hgroup>
-            <h2>Product Flavors: Dependency Scopes</h2>
-        </hgroup>
-        <article>
-            <div class="columns-2">
-                <p>
-                    <code>compile</code><br/>
-                    <code>runtime</code><br/>
-                    <br/>
-                    <br/>
-                    <code>testCompile</code><br/>
-                    <code>testRuntime</code><br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                </p>
-                <p>
-                    <code>compile</code><br/>
-                    <code>apk</code><br/>
-                    <br/>
-                    <br/>
-                    <code>instrumentTestCompile</code><br/>
-                    <code>instrumentTestRuntime</code><br/>
-                    <br/>
-                    <br/>
-                    <code>debugCompile/Package</code><br/>
-                    <code>releaseCompile/Package</code><br/>
-                    <code>betaCompile/Package</code><br/>
-                    <br/>
-                    <br/>
-                    <code class="red">flavor1Compile/Package</code><br/>
-                    <code class="red">instrumentTestFlavor1Compile/Package</code><br/>
-                </p>
-            </div>
-        </article>
-    </slide>
-     
-    
-    <slide>    
-        <hgroup>
-            <h2>Variant = Build Types * Product Flavor(s)</h2>
-        </hgroup>
-        <article  class="smaller flexbox vcenter">
-            <div>
-                <div>
-                    <p>No Flavors:</p>
-                    <table style="width: 600px;">
-                        <tr> <th></th> <th>debug</th> <th>release</th> </tr>
-                        <tr> <td style="background-color:#519DFD; width:130px;"></td> <td>debug</td> <td>release</td> </tr>
-                        <tr> <td style="background-color:#519DFD; width:130px;"></td> <td>-</td> <td>-</td> </tr>
-                    </table>
-                </div>
-                <div class="build">
-                    <div>
-                        <br>
-                        <br>
-                        <p>With Flavors:</p>
-                         <table style="width: 600px;">
-                            <tr> <th></th> <th>debug</th> <th>release</th> </tr>
-                            <tr> <td style="background-color:#519DFD; color: white; width:130px;">Flavor1</td> <td>Flavor1Debug</td> <td>Flavor1Release</td> </tr>
-                            <tr> <td style="background-color:#519DFD; color: white; width:130px;">Flavor2</td> <td>Flavor2Debug</td> <td>Flavor2Release</td> </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </article>
-  </slide>
-     
-        
-  <slide>    
-        <hgroup>
-            <h2>Multi-Flavors DSL</h2>
-        </hgroup>
-        <article>
-            <pre class="prettyprint" data-lang="build.gradle">
-
-android {
-    flavorGroups 'abi', 'version'
-    productFlavors {
-        arm {
-            flavorGroup 'abi'
-        }
-        paid {
-            flavorGroup 'version'
-            packageName '.paid'
-        }
-    }
-}
-            </pre> 
-        </article>
-  </slide>
-    
-    
-  <slide>    
-        <hgroup>
-            <h2>Variant = Build Types * Product Flavor(s)</h2>
-        </hgroup>
-        <article  class="smaller flexbox vcenter">
-            <table style="width: 800px;">
-                <tr> <th></th> <th></th> <th>debug</th> <th>release</th> </tr>
-                <tr> 
-                    <td style="background-color:#519DFD; color: white; width:130px;">paid</td>
-                    <td style="background-color:#519DFD; color: white; width:130px;">arm</td>
-                    <td>paid-arm-debug</td> <td>paid-arm-release</td> 
-                </tr>
-                <tr> 
-                    <td style="background-color:#519DFD; color: white; width:130px;">paid</td>
-                    <td style="background-color:#519DFD; color: white; width:130px;">x86</td>
-                    <td>paid-x86-debug</td> <td>paid-x86-release</td> 
-                </tr>
-                <tr> 
-                    <td style="background-color:#519DFD; color: white; width:130px;">paid</td>
-                    <td style="background-color:#519DFD; color: white; width:130px;">mips</td>
-                    <td>paid-mips-debug</td> <td>paid-mips-release</td> 
-                </tr>
-                <tr> 
-                    <td style="background-color:#519DFD; color: white; width:130px;">free</td>
-                    <td style="background-color:#519DFD; color: white; width:130px;">arm</td>
-                    <td>free-arm-debug</td> <td>free-arm-release</td> 
-                </tr>
-                <tr> 
-                    <td style="background-color:#519DFD; color: white; width:130px;">free</td>
-                    <td style="background-color:#519DFD; color: white; width:130px;">x86</td>
-                    <td>free-x86-debug</td> <td>free-x86-release</td> 
-                </tr>
-                <tr> 
-                    <td style="background-color:#519DFD; color: white; width:130px;">free</td>
-                    <td style="background-color:#519DFD; color: white; width:130px;">mips</td>
-                    <td>free-mips-debug</td> <td>free-mips-release</td> 
-                </tr>
-                
-            </table>
-        </article>
-  </slide>
-    
-    
-  <slide hidden>    
-      <aside class="note">
-          <section>
-              You can have up to 4 different source folders to merge
-          </section>
-      </aside>
-        <hgroup>
-            <h2>Build Variants: Source Code</h2>
-        </hgroup>
-        <article>
-            <p>Multiple Source Folders, Single Output</p>
-            <div class="flexbox vcenter">
-                <br/>
-                <br/>
-                <code>src/main/java</code><br/>
-                <code>src/free/java</code><br/>
-                <code>src/mips/java</code><br/>
-                <code>src/debug/java</code>
-            </div>
-        </article>
-  </slide>
-    
-    
-  <slide hidden>    
-      <aside class="note">
-          <section>
-              
-          </section>
-      </aside>
-        <hgroup>
-            <h2>Build Variants: Resources & Assets</h2>
-        </hgroup>
-        <article>
-            <p>Overlays</p>
-            <div class="flexbox vcenter">
-                <br/>
-                <br/>
-                <center>
-                    <code>src/debug/res</code><br/>
-                    <code>&darr;</code><br/>
-                    <code>src/free/res</code><br/>
-                    <code>&darr;</code><br/>
-                    <code>src/mips/res</code><br/>
-                    <code>&darr;</code><br/>
-                    <code>src/main/res</code><br/>
-                </center>
-            </div>
-        </article>
-    </slide>
-    
-    <slide hidden>    
-      <aside class="note">
-          <section>
-              
-          </section>
-      </aside>
-        <hgroup>
-            <h2>Build Variants: Signing Configuration</h2>
-        </hgroup>
-        <article>
-            <p>Priority Order</p>
-            <div class="flexbox vcenter">
-                <br/>
-                <br/>
-                <center>
-                    <code>android.<b>buildTypes.release</b>.signingConfig</code><br/>
-                    <code>&darr;</code><br/>
-                    <code>android.<b>productFlavors.free</b>.signingConfig</code><br/>
-                    <code>&darr;</code><br/>
-                    <code>android.<b>productFlavors.mips</b>.signingConfig</code><br/>
-                    <code>&darr;</code><br/>
-                    <code>android.<b>defaultConfig</b>.signingConfig</code><br/>
-                </center>
-            </div>
-        </article>
-    </slide>
-    
-    
-    <slide hidden>    
-      <aside class="note">
-          <section>
-              
-          </section>
-      </aside>
-        <hgroup>
-            <h2>Build Variants: Package Name</h2>
-        </hgroup>
-        <article class="smaller">
-            <p>Overlays + Suffix</p>
-            <div class="columns-2" style="font-size: 14pt;">
-                <div>
-                    <center>
-                        <br/>
-                        <br/>
-                        <code>android.productFlavors.free.packageName</code><br/>
-                        <code>&darr;</code><br/>
-                        <code>android.productFlavors.mips.packageName</code><br/>
-                        <code>&darr;</code><br/>
-                        <code>android.defaultConfig.packageName</code><br/>
-                        <code>&darr;</code><br/>
-                        <code>src/main/AndroidManifest.xml</code><br/>
-                    </center>
-                </div>
-                <div>
-                    <center>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <nobr><code>+ android.buildTypes.debug.packageNameSuffix</code></nobr>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <br/>
-                    </center>
-                </div>
-            </div>
-        </article>
-    </slide>
-   
-    
-     <slide>    
-      <aside class="note">
-          <section>
-              <p><b>Only one Build Type is tested</b> - for now only debug Build Type is supported, but this is the thing to change in the future</p><br>
-              <p>Now we can test our library projects, if we have one test apk will be generated that includes library</p><br>
-              <p>This all was about building test, let's talk about running them</p>
-          </section>
-      </aside>
-        <hgroup>
-            <h2>Testing Recap</h2>
-        </hgroup>
-        <article>
-            <ul>
-                <li>Test Source Sets: <code>src/instrumentTest, src/instrumentTestFlavor1</code></li><br/>
-                <li>Dependency Scopes: <code>instrumentTestCompile, instrumentTestFlavor1Compile</code></li><br/>
-                <li>Genearated <code>AndroidManifest.xml</code></li><br/>
-                <li>Only one Build Type is tested</li><br/>
-                <li>Library embedded into Test APK</li>
-            </ul>
-        </article>
-    </slide>
-    
-    
-    <slide>    
-      <aside class="note">
-          <section>
-             <ul>
-                <li><code>check</code> - static analysis like FindBugs, Robo Electric, etc</li>
-                <li><code>connectedCheck</code> - the most common one, when you sit in fromt of your desk, and run tests on all connected devices in paralel</li>
-                <li><code>deviceCheck</code> - this is the case for Build Servers, there is some problems, e.g. if you have several build servers, devices should be connected to all of them, second one is when you run your instrumentation test in parallel, and they hits UI - it's just don't work.<br>There are two sub scenarios of this scenario</li>
-            </ul>
-          </section>
-      </aside>
-        <hgroup>
-            <h2>Testing Scenarios</h2>
-        </hgroup>
-        <article>
-            <ul>
-                <li><code>check</code></li><br>
-                <li><code>connectedCheck</code></li><br/>
-                <li><code>deviceCheck</code></li><br/>
-            </ul>
-        </article>
-    </slide>
-    
-    <slide>    
-      <aside class="note">
-          <section>
-              <ul>
-                    <li><b>Delayed / Queuded tests</b> - imagine you have you device lab, your build server build apk, puts them into queue and run one by one. Note that it won't be your Jenkins build server but separate one, with separate dashboard. Important thing to note here is that Jenkins is not aware of all our Build Variant that we were talking about few minutes ago, so you'll have to reconfigure Jenkins (or othe CI server) each time you add/remove variants</li>
-              </ul>
-              <ul>
-                    <li><b>Test server API</b> - you can easily implement it, or as an option you can use 3d party services that impement it, like <a href="https://appthwack.com/">AppThwack</a>, <a href="http://testdroid.com/">Testdroid</a>, etc</li>
-              </ul>
-          </section>
-      </aside>
-        <hgroup>
-            <h2>Device Scenarios</h2>
-        </hgroup>
-        <article>
-            <ul class="build">
-                <li class="auto-fadein">Delayed / Queuded tests
-                    <ul>
-                        <li>Upload APKs to service</li>
-                        <li>Queued tests</li>
-                        <li>Remote report/dashboard</li>
-                    </ul>
-                    <br>
-                </li>
-                <li>Test server API
-                    <ul>
-                        <li>Upload APKs method</li>
-                        <li>Plugin register itself to the android plugin</li>
-                        <li>Support any number of Servers</li>
-                    </ul>
-                </li>
-            </ul>
-        </article>
-    </slide>
-    
-    
-    <slide>    
-      <aside class="note">
-          <section>
-             One of the companies that is provideing this kind of API is <a href="https://www.manymo.com/">Manymo</a>
-          </section>
-      </aside>
-        <hgroup>
-            <h2>Device Scenarios</h2>
-        </hgroup>
-        <article>
-            <ul class="build">
-                <li class="auto-fadein">Devices Available on-demand
-                    <ul>
-                        <li>Direct connection to device</li>
-                        <li>Local / Cloud emulators</li>
-                        <li>Local report / dashboard</li>
-                    </ul>
-                    <br>
-                </li>
-                <li>DeviceProvider / DeviceConnector API
-                    <ul>
-                        <li>Return list of DeviceConnectors</li>
-                        <li>Connect, install, run tests, uninstall on each device</li>
-                        <li>Support of any number of Providers</li>
-                    </ul>
-
-            </ul>
-        </article>
-    </slide>
-    
-    
-      <slide class="segue dark nobackground">
-      <aside class="note">
-          <section>
-              And the last thing I want to talk about is Build Environment
-          </section>
-      </aside>
-    <aside class="gdbar"><img src="images/gdg_icon_128.png"></aside>
-    <hgroup class="auto-fadein">
-      <h2>Build Environment</h2>
-    </hgroup>
-  </slide>
-    
-    <slide>    
-      <aside class="note">
-          <section>
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">-->
+        <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+        <!--This one seems to work all the time, but really small on ipad-->
+        <!--<meta name="viewport" content="initial-scale=0.4">-->
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" media="all" href="theme/css/default.css">
+        <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="theme/css/phone.css">
+        <base target="_blank">
+        <!-- This amazingness opens all links in a new tab. -->
+        <script data-main="js/slides" src="js/require-1.0.8.min.js"></script>
+    </head>
+    
+    <body style="opacity: 0">
+        <slides class="layout-widescreen">
             
-          </section>
-      </aside>
-        <hgroup>
-            <h2>Build Environment</h2>
-        </hgroup>
-        <article>
-            <ul class="build" style="list-style-type: none !important;">
-                <li class="auto-fadein">Gradle Version
-                    <ul><li>Use the Wrapper!</li></ul>
-                    <br>
-                </li>
-                <li>Plugin Version
-                    <ul><li><code>'com.android.tools.buid:gradle:<span class="red">0.5</span>'</code></li></ul>
-                    <br>
-                </li>
-                <li>Build Tools Version
-                    <ul><li><code>android.buildToolsVersion '<span class="red">17.0</span>'</code></li></ul>
-                    <br>
-                </li>
-                <li>IDE is not responsible for Builds</li>
-            </ul>
-        </article>
-    </slide>
-    
-    
-     <slide>    
-      <aside class="note">
-          <section>
-              
-          </section>
-      </aside>
-        <hgroup>
-            <h2>Usefull links</h2>
-        </hgroup>
-        <article>
-            <ul>
-                <li><a href="http://tools.android.com/tech-docs/new-build-system/user-guide">Android Plugin User Guide</a></li>
-                <li><a href="http://www.gradle.org/documentation">Gradle Documentation</a></li>
-                <li><a href="http://www.gradleware.com/registered-access?content=books%2Fbuilding-and-testing%2F">Book: Building and Testing with Gradle</a></li>
-            </ul>
-        </article>
-  </slide>
-    
+            
+            <slide class="logoslide nobackground">
+                <article class="flexbox vcenter">
+                    <span>
+                        <img src="images/gdg_logo.png">
+                    </span>
+                </article>
+            </slide>
+            
+            
+            <slide class="title-slide segue nobackground">
+                <aside class="gdbar">
+                    <img src="images/gdg_icon_128.png">
+                </aside>
+                <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+                <hgroup class="auto-fadein">
+                    <h1 data-config-title>
+                        <!-- populated from slide_config.json -->
+                    </h1>
+                    <h2 data-config-subtitle>
+                        <!-- populated from slide_config.json -->
+                    </h2>
+                    <p data-config-presenter>
+                        <!-- populated from slide_config.json -->
+                    </p>
+                </hgroup>
+            </slide>
+            
+            
+            <slide class="fill nobackground" style="background-image: url(images/content/lazy_animal.jpg)">
+                <hgroup>
+                    <h2 class="white shadow">How to be <b>productive</b>?</h2>
+                </hgroup>
+                <article class="build">
+                    <h2 class="white shadow" style="float: right;">... or how to be <b>lazy</b>?</h2>
+                </article>
+                <footer class="source white">www.flickr.com</footer>
+            </slide>
+            
+            
+            <slide class="segue dark quote nobackground">
+                <aside class="gdbar right bottom">
+                    <img src="images/gdg_icon_128.png">
+                </aside>
+                <article class="flexbox vleft auto-fadein">
+                    <q>Progress isn't made by early risers. It's made by lazy men trying to find easier ways to do something.</q>
+                    <div class="author">Robert A. Heinlein</div>
+                </article>
+            </slide>
+            
+            
+            <slide class="segue nobackground fill" style="background-image: url(images/content/lazy_animal.jpg) !important;">
+                <div class="overlay" style="z-index:0;"></div>
+                <aside class="gdbar">
+                  <img src="images/gdg_icon_128.png">
+              </aside>
+              <hgroup class="auto-fadein" style="z-index:2;">
+                  <h2>Tip #1 - Write Less Code</h2>
+                  <h3>But how?</h3>
+              </hgroup>
+            </slide>
+            
+            
+            <slide>
+                <hgroup>
+                    <h2>Libraries</h2>
+                    <h3>How many are available?</h3>
+                </hgroup>
+                <article class="flexbox vcenter">
+                    <img src="images/content/Cumulative-Open-Source-Mobile-Projects.png" style=" height: 450px; margin-top: -150px;">
+                    <footer class="source">source: <a href="http://www.blackducksoftware.com/news/releases/open-source-mobile-project-growth-continues-gain-momentum" style="color:darkgrey;">http://www.blackducksoftware.com/</a></footer>
+                </article>
+            </slide>
+            
+            
+            
+            <slide class="nobackground fill" style="background-image: url(images/content/github-android.png) !important;">
+                <article class="build flexbox vcenter">
+                      <h2 class="white shadow fade_background">More than 75 000 results</h2>
+                      <h2 class="white shadow fade_background">40 000 of them in Java</h2>
+                      <h2 class="white shadow fade_background">iOS - 27 000 repositories</h2>
+              </article>
+            </slide>
+            
+            
+             <slide class="nobackground fill" style="background-image: url(images/content/github-1000-stars.png) !important;">
+                <article class="build flexbox vcenter">
+                  <div style="background-color: rgba(0,0,0,0.7); padding: 40px">
+                      <h2 class="white shadow"  style="z-index:2 !important;">35 repositories</h2>
+                  </div>
+              </article>
+            </slide>
+            
+            
+            <slide>
+                 <aside class="note">
+                      <section>
+                        You'll aks why there is no ActionBarSherlock?
+                      </section>
+                </aside>
+                <hgroup>
+                  <h2>UI and custom views</h2>
+                </hgroup>
+                <article>
+                  <ul>
+                    <li>Backward compability
+                        <ul>
+                            <li><a href="http://developer.android.com/tools/support-library/index.html">Support Library</a></li>
+                            <li><a href="http://nineoldandroids.com/">NineOldAndroids</a></li>
+                        </ul>
+                    </li>
+                      <br>
+                    <li>Custom Views
+                        <ul>
+                            <li><a href="https://github.com/JakeWharton/Android-ViewPagerIndicator">View Page Indicator</a></li>
+                            <li><a href="https://github.com/emilsjolander/StickyListHeaders">Sticky List Headers</a></li>
+                            <li><a href="https://github.com/chrisbanes/ActionBar-PullToRefresh">ActionBar Pull to Refresh</a></li>
+                            <li><a href="https://github.com/keyboardsurfer/Crouton/">Crouton</a></li>
+                            <li><a href="https://github.com/flavienlaurent/datetimepicker">Date Time Picker</a></li>
+                            <li><a href="https://github.com/JakeWharton/SwipeToDismissNOA">Swipe To Dismiss</a></li>
+                        </ul>
+                    </li>
+                  </ul>
+                </article>
+            </slide>
+            
+            
+            <slide>
+                <hgroup>
+                  <h2>Networking</h2>
+                </hgroup>
+                <article>
+                  <ul>
+                      <li>REST Clients
+                        <ul>
+                            <li><a href="http://projects.spring.io/spring-android/">Spring for Android</a></li>
+                            <li><a href="http://square.github.io/retrofit/">Retrofit</a></li>
+                        </ul>
+                      </li>
+                      <br>
+                      <li>Async Requests
+                        <ul>
+                            <li><a href="http://square.github.io/okhttp/">OkHttp</a></li>
+                            <li><a href="https://github.com/koush/ion">Ion</a></li>
+                        </ul>
+                      </li>
+                      <br>
+                      <li>Messaging
+                        <ul>
+                            <li><a href="https://code.google.com/p/protobuf/">Protobuf</a></li>
+                            <li><a href="https://github.com/square/wire">Wire</a></li>
+                        </ul>
+                      </li>
+                  </ul>
+                </article>
+            </slide>
+            
+            
+            <slide>
+                <hgroup>
+                  <h2>ORM</h2>
+                </hgroup>
+                <article>
+                  <ul>
+                    <li><a href="http://ormlite.com/sqlite_java_android_orm.shtml">OrmLite</a></li>
+                    <li><a href="https://github.com/pardom/ActiveAndroid/wiki/Creating-your-database-model">Active Droid</a></li>
+                    <li><a href="http://greendao-orm.com/">Green Dao</a></li>
+                  </ul>
+                </article>
+            </slide>
+            
+            
+            <slide>
+                <hgroup>
+                  <h2>Testing</h2>
+                </hgroup>
+                <article>
+                  <ul>
+                      <li>Test Cases
+                        <ul>
+                            <li><a href="http://robolectric.org/">Roboelectric</a></li>
+                            <li><a href="https://code.google.com/p/robotium/">Robotium</a></li>
+                        </ul>
+                      </li>
+                      <br>
+                      <li>Mocking
+                        <ul>
+                            <li><a href="https://code.google.com/p/mockito/">Mockito</a></li>
+                            <li><a href="https://code.google.com/p/android-mock/">Android Mock</a></li>
+                        </ul>
+                      </li>
+                      <br>
+                      <li>Tools
+                        <ul>
+                            <li><a href="https://github.com/stephanenicolas/Quality-Tools-for-Android">Quality Tools for Android</a></li>
+                            <li><a href="http://square.github.io/spoon/">Spoon</a></li>
+                        </ul>
+                      </li>
+                  </ul>
+                </article>
+            </slide>
+            
+            
+            <slide>
+                <hgroup>
+                  <h2>Utilites</h2>
+                </hgroup>
+                <article>
+                  <ul>
+                      <li>Event Bus
+                        <ul>
+                            <li><a href="https://github.com/greenrobot/EventBus">EventBus</a></li>
+                            <li><a href="http://square.github.io/otto/">Otto</a></li>
+                        </ul>
+                      </li>
+                      <br>
+                      <li>Caching
+                        <ul>
+                            <li><a href="https://github.com/chrisbanes/Android-BitmapCache/">Android Bitmap Cache</a></li>
+                            <li><a href="http://square.github.io/picasso/">Picasso</a></li>
+                        </ul>
+                      </li>
+                      <br>
+                      <li>Code Style
+                        <ul>
+                            <li><a href="https://code.google.com/p/guava-libraries/">Guava</a></li>
+                            <li><a href="http://www.jetbrains.com/idea/documentation/howto.html">@NotNull</a></li>
+                        </ul>
+                      </li>
+                      <br>
+                  </ul>
+                </article>
+            </slide>
+            
+            
+            <slide>
+                <hgroup>
+                  <h2>Dependency Injection</h2>
+                </hgroup>
+                <article>
+                  <ul>
+                      <li>Class Injection
+                        <ul>
+                            <li><a href="http://square.github.io/dagger/">Dagger</a></li>
+                        </ul>
+                      </li>
+                      <br>
+                      <li>View Injection
+                        <ul>
+                            <li><a href="https://github.com/JakeWharton/butterknife">ButterKnife</a></li>
+                        </ul>
+                      </li>
+                      <br>
+                      <li>Universal
+                        <ul>
+                            <li><a href="https://github.com/roboguice/roboguice">Roboguice</a></li>
+                            <li><a href="https://github.com/excilys/androidannotations/wiki">AndroidAnnotations</a></li>
+                        </ul>
+                      </li>
+                      <br>
+                  </ul>
+                </article>
+            </slide>
+            
+            
+            <slide>
+                <hgroup>
+                    <h2>Some code</h2>
+                  <h3>Reduce amount of code with AndroidAnnotations</h3>
+                </hgroup>
+                <article class="smaller">
+                  <div class="build">
+                    <div class="auto-fadein"><h4>View Initialization Without @AA</h4>
+                        <pre class="prettyprint" data-lang="java" style="margin-top:20px">
+ListView bookmarkList;
+EditText search;
+...
+bookmarkList = (ListView) findViewById(R.id.bookmarkList);
+search = (EditText) findViewById(R.id.search);</pre>
+                    </div>
+                    <div style="margin-top:50px"><h5>Using @AA</h5>
+                        <pre class="prettyprint" data-lang="java" style="margin-top:20px">
+@ViewById ListView bookmarkList;
+@ViewById EditText search;                        </pre>
+                    </div>
+                  </div>
+                </article>
+            </slide>
+            
+            
+            <slide>
+                <hgroup>
+                    <h2>Some code</h2>
+                  <h3>Reduce amount of code with AndroidAnnotations</h3>
+                </hgroup>
+                <article class="smaller">
+                  <div class="build">
+                    <div class="auto-fadein"><h4>Click Handlers Without @AA</h4>
+                        <pre class="prettyprint" data-lang="java" style="margin-top:20px">
+View updateBookmarksButton1 = findViewById(R.id.updateBookmarksButton1);
+updateBookmarksButton1.setOnClickListener(new OnClickListener() {
+ 
+      @Override
+      public void onClick(View v) {
+        updateBookmarksClicked();
+      }
+});</pre>
+                    </div>
+                    <div style="margin-top:50px"><h5>Using @AA</h5>
+                        <pre class="prettyprint" data-lang="java" style="margin-top:20px">
+<b>@Click({R.id.updateBookmarksButton1, R.id.updateBookmarksButton2})</b>
+void updateBookmarksClicked() {
+    // Do something
+} </pre>
+                    </div>
+                  </div>
+                </article>
+            </slide>
+            
+            
+             <slide>
+                <hgroup>
+                    <h2>Some code</h2>
+                  <h3>Reduce amount of code with AndroidAnnotations</h3>
+                </hgroup>
+                <article class="smaller">
+                  <div class="build">
+                    <div class="auto-fadein"><h4>REST Client Without @AA</h4>
+                        <pre class="prettyprint" data-lang="java" style="margin-top:20px">
+// Code is hidden in order not to get scared someone
+                        </pre>
+                    </div>
+                    <div style="margin-top:50px"><h5>Using @AA</h5>
+                        <pre class="prettyprint" data-lang="java" style="margin-top:20px">
+@Rest("http://www.bookmarks.com")
+public interface BookmarkClient {
+  
+  @Get("/bookmarks/{userId}?search={search}")
+  Bookmarks getBookmarks(String search, String userId);
+ 
+} </pre>
+                    </div>
+                  </div>
+                </article>
+            </slide>
+            
+            
+            <slide>
+                <hgroup>
+                  <h2>Library Agregators</h2>
+                </hgroup>
+                <article>
+                  <ul>
+                    <li><a href="http://www.androidviews.net/">Android Views</a></li>
+                    <li><a href="http://androidweekly.net/toolbox">Android Weekly Toolbox</a></li>
+                  </ul>
+                </article>
+            </slide>
+            
+            
+            <slide class="segue nobackground fill" style="background-image: url(images/content/lazy_animal.jpg) !important;">
+                <div class="overlay" style="z-index:0;"></div>
+                <aside class="gdbar">
+                  <img src="images/gdg_icon_128.png">
+              </aside>
+              <hgroup class="auto-fadein" style="z-index:2;">
+                  <h2>Tip #2 - Look for 3d party tools</h2>
+              </hgroup>
+            </slide>
+            
+            
+            <slide class="segue nobackground fill" style="background-image: url(images/content/lazy_animal.jpg) !important;">
+                <div class="overlay" style="z-index:0;"></div>
+                <aside class="gdbar">
+                  <img src="images/gdg_icon_128.png">
+              </aside>
+              <hgroup class="auto-fadein" style="z-index:2;">
+                  <h2>Tip #3 - Bootstrap your project!</h2>
+                  <h3>Did you heared about Twitter Bootstrap?</h3>
+              </hgroup>
+            </slide>
+            
+            
+            <slide class="segue nobackground fill" style="background-image: url(images/content/lazy_animal.jpg) !important;">
+                <div class="overlay" style="z-index:0;"></div>
+                <aside class="gdbar">
+                  <img src="images/gdg_icon_128.png">
+              </aside>
+              <hgroup class="auto-fadein" style="z-index:2;">
+                  <h2>Tip #4 - Automate your builds!</h2>
+                  <h3>Look for my presentation on Sunday:)</h3>
+              </hgroup>
+            </slide>
+            
+            
+             <slide class="segue nobackground fill" style="background-image: url(images/content/lazy_animal.jpg) !important;">
+                <div class="overlay" style="z-index:0;"></div>
+                <aside class="gdbar">
+                  <img src="images/gdg_icon_128.png">
+              </aside>
+              <hgroup class="auto-fadein" style="z-index:2;">
+                  <h2>Tip #5 - Use other goodies!</h2>
+              </hgroup>
+            </slide>
+            
+            <!--Chrome extensions, check other code maybe some other tools-->
+            <!--https://code.google.com/p/iosched/ -->
+            <!--Android Apps for Development -->
+            
+            <slide class="thank-you-slide segue nobackground">
+                <aside class="gdbar right">
+                    <img src="images/gdg_icon_128.png">
+                </aside>
+                <article class="flexbox vleft auto-fadein">
+                    <h2 style="text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);">Thank You!</h2>
+                    <p>Presentation is available on github</p>
+                </article>
+                <p class="auto-fadein" data-config-contact>
+                    <!-- populated from slide_config.json -->
+                </p>
+            </slide>
+            
+            
+            <slide class="logoslide dark nobackground" hidden>
+                <article class="flexbox vcenter">
+                    <span>
+                        <img src="images/gdg_logo_white.png">
+                    </span>
+                </article>
+            </slide>
+            <slide class="backdrop"></slide>
+        
+        
+        </slides>
+        
+        
+        <script>
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-44230759-2']);
+            _gaq.push(['_trackPageview']);
 
-  <slide class="thank-you-slide segue nobackground">
-    <aside class="gdbar right"><img src="images/gdg_icon_128.png"></aside>
-    <article class="flexbox vleft auto-fadein">
-      <h2 style="text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);">Thank You!</h2>
-      <p>Presentation is available on github</p>
-    </article>
-    <p class="auto-fadein" data-config-contact>
-      <!-- populated from slide_config.json -->
-    </p>
-  </slide>
+            (function() {
+                var ga = document.createElement('script');
+                ga.type = 'text/javascript';
+                ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(ga, s);
+            })();
+        </script>
+        <!--[if IE]>
+            <script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+            <script>
+                CFInstall.check({
+                    mode: 'overlay'
+                });
+            </script>
+        <![endif]-->
+    </body>
 
-  <slide class="logoslide dark nobackground" hidden>
-    <article class="flexbox vcenter">
-      <span><img src="images/gdg_logo_white.png"></span>
-    </article>
-  </slide>
-
-  <slide class="backdrop"></slide>
-
-</slides>
-
-<script>
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-44230759-1']);
-_gaq.push(['_trackPageview']);
-
-(function() {
-  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();
-</script>
-
-<!--[if IE]>
-  <script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
-  <script>CFInstall.check({mode: 'overlay'});</script>
-<![endif]-->
-</body>
 </html>
